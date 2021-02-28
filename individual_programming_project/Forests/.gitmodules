@@ -1,0 +1,3 @@
+[submodule "ipp-2020-testy"]
+	path = ipp-2020-testy
+	url = https://github.com/jmolinski/ipp-2020-testy/

@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
+    <generated>
+      <config projectName="forests" targetName="forests" />
+    </generated>
+  </component>
+  <component name="CMakeSettings">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="60531d92-5c22-4aba-886a-5b6d963ebec4" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BeingTree.c" beforeDir="false" afterPath="$PROJECT_DIR$/BeingTree.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/World.c" beforeDir="false" afterPath="$PROJECT_DIR$/World.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/forests" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/forests" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ipp-2020-testy" beforeDir="false" afterPath="$PROJECT_DIR$/ipp-2020-testy" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
+  <component name="Git.Settings">
+    <option name="PREVIOUS_COMMIT_AUTHORS">
+      <list>
+        <option value="Adam Boguszewski" />
+      </list>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="UPDATE_TYPE" value="MERGE" />
+  </component>
+  <component name="ProjectId" id="1YcfcyTt319v4aZuPxn2fsvqhIV" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="settings.editor.selected.configurable" value="preferences.sourceCode.C/C++" />
+  </component>
+  <component name="RunManager">
+    <configuration name="forests" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="forests" TARGET_NAME="forests" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="forests" RUN_TARGET_NAME="forests">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="60531d92-5c22-4aba-886a-5b6d963ebec4" name="Default Changelist" comment="" />
+      <created>1583246886491</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1583246886491</updated>
+      <workItem from="1583246888253" duration="6063000" />
+      <workItem from="1583352014054" duration="4152000" />
+      <workItem from="1583531783651" duration="7634000" />
+      <workItem from="1583539564429" duration="118000" />
+      <workItem from="1583578913181" duration="7594000" />
+      <workItem from="1583594319734" duration="8780000" />
+      <workItem from="1583610809846" duration="13609000" />
+      <workItem from="1583665360244" duration="4045000" />
+      <workItem from="1583679477210" duration="1049000" />
+      <workItem from="1583681357561" duration="1636000" />
+      <workItem from="1583856262806" duration="975000" />
+      <workItem from="1583874469905" duration="1944000" />
+      <workItem from="1583884771765" duration="3066000" />
+      <workItem from="1583937945451" duration="7406000" />
+      <workItem from="1583966988569" duration="5197000" />
+      <workItem from="1584054622679" duration="7864000" />
+      <workItem from="1584062781058" duration="60000" />
+      <workItem from="1584144392863" duration="2903000" />
+      <workItem from="1584288615874" duration="7000" />
+      <workItem from="1584308817289" duration="496000" />
+      <workItem from="1584458631005" duration="235000" />
+      <workItem from="1584649567146" duration="1682000" />
+    </task>
+    <task id="LOCAL-00001" summary="test">
+      <created>1583355647355</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1583355647355</updated>
+    </task>
+    <task id="LOCAL-00002" summary="input in progress">
+      <created>1583539486455</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1583539486455</updated>
+    </task>
+    <task id="LOCAL-00003" summary="input finished, still needs to be tested correctly">
+      <created>1583583152925</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1583583152925</updated>
+    </task>
+    <task id="LOCAL-00004" summary="'*' in check case not covered, code needs refactoring, most job is done">
+      <created>1583604898977</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1583604898978</updated>
+    </task>
+    <task id="LOCAL-00005" summary="finished, not tested or refactored">
+      <created>1583616954632</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1583616954632</updated>
+    </task>
+    <task id="LOCAL-00006" summary="valgrind is angry, but it works">
+      <created>1583627275248</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1583627275248</updated>
+    </task>
+    <task id="LOCAL-00007" summary="valgrind is angry, but less than before">
+      <created>1583628587130</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1583628587130</updated>
+    </task>
+    <task id="LOCAL-00008" summary="probably works">
+      <created>1583669007032</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1583669007033</updated>
+    </task>
+    <task id="LOCAL-00009" summary="needs to be tested">
+      <created>1583686077678</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1583686077678</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Badocha's tests work">
+      <created>1583972167583</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1583972167583</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Almost done">
+      <created>1584061878343</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1584061878343</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Almost done, small bugfix">
+      <created>1584062821401</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1584062821401</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="test" />
+    <MESSAGE value="input in progress" />
+    <MESSAGE value="input finished, still needs to be tested correctly" />
+    <MESSAGE value="'*' in check case not covered, code needs refactoring, most job is done" />
+    <MESSAGE value="finished, not tested or refactored" />
+    <MESSAGE value="valgrind is angry, but it works" />
+    <MESSAGE value="valgrind is angry, but less than before" />
+    <MESSAGE value="probably works" />
+    <MESSAGE value="needs to be tested" />
+    <MESSAGE value="Badocha's tests work" />
+    <MESSAGE value="Almost done" />
+    <MESSAGE value="Almost done, small bugfix" />
+    <option name="LAST_COMMIT_MESSAGE" value="Almost done, small bugfix" />
+    <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="474" y="67" width="887" height="816" key="CommitChangelistDialog2" timestamp="1584147647923">
+      <screen x="70" y="27" width="1370" height="873" />
+    </state>
+    <state x="474" y="67" width="887" height="816" key="CommitChangelistDialog2/70.27.1370.873@70.27.1370.873" timestamp="1584147647923" />
+    <state width="1324" height="119" key="GridCell.Tab.0.bottom" timestamp="1584651715642">
+      <screen x="70" y="27" width="1370" height="873" />
+    </state>
+    <state width="1324" height="119" key="GridCell.Tab.0.bottom/70.27.1370.873@70.27.1370.873" timestamp="1584651715642" />
+    <state width="1324" height="119" key="GridCell.Tab.0.center" timestamp="1584651715637">
+      <screen x="70" y="27" width="1370" height="873" />
+    </state>
+    <state width="1324" height="119" key="GridCell.Tab.0.center/70.27.1370.873@70.27.1370.873" timestamp="1584651715637" />
+    <state width="1324" height="119" key="GridCell.Tab.0.left" timestamp="1584651715629">
+      <screen x="70" y="27" width="1370" height="873" />
+    </state>
+    <state width="1324" height="119" key="GridCell.Tab.0.left/70.27.1370.873@70.27.1370.873" timestamp="1584651715629" />
+    <state width="1324" height="119" key="GridCell.Tab.0.right" timestamp="1584651715640">
+      <screen x="70" y="27" width="1370" height="873" />
+    </state>
+    <state width="1324" height="119" key="GridCell.Tab.0.right/70.27.1370.873@70.27.1370.873" timestamp="1584651715640" />
+    <state width="1324" height="267" key="GridCell.Tab.1.bottom" timestamp="1584651714943">
+      <screen x="70" y="27" width="1370" height="873" />
+    </state>
+    <state width="1324" height="267" key="GridCell.Tab.1.bottom/70.27.1370.873@70.27.1370.873" timestamp="1584651714943" />
+    <state width="1324" height="267" key="GridCell.Tab.1.center" timestamp="1584651714941">
+      <screen x="70" y="27" width="1370" height="873" />
+    </state>
+    <state width="1324" height="267" key="GridCell.Tab.1.center/70.27.1370.873@70.27.1370.873" timestamp="1584651714941" />
+    <state width="1324" height="267" key="GridCell.Tab.1.left" timestamp="1584651714932">
+      <screen x="70" y="27" width="1370" height="873" />
+    </state>
+    <state width="1324" height="267" key="GridCell.Tab.1.left/70.27.1370.873@70.27.1370.873" timestamp="1584651714932" />
+    <state width="1324" height="267" key="GridCell.Tab.1.right" timestamp="1584651714942">
+      <screen x="70" y="27" width="1370" height="873" />
+    </state>
+    <state width="1324" height="267" key="GridCell.Tab.1.right/70.27.1370.873@70.27.1370.873" timestamp="1584651714942" />
+    <state x="546" y="175" width="408" height="583" key="RollbackChangesDialog" timestamp="1584308895435">
+      <screen x="70" y="27" width="1370" height="873" />
+    </state>
+    <state x="546" y="175" width="408" height="583" key="RollbackChangesDialog/70.27.1370.873@70.27.1370.873" timestamp="1584308895435" />
+    <state x="273" y="90" width="1037" height="737" key="SettingsEditor" timestamp="1583612130065">
+      <screen x="70" y="27" width="1370" height="873" />
+    </state>
+    <state x="273" y="90" width="1037" height="737" key="SettingsEditor/70.27.1370.873@70.27.1370.873" timestamp="1583612130065" />
+    <state x="672" y="200" width="155" height="533" key="VcsDiffUtil.ChangesDialog" timestamp="1584308919386">
+      <screen x="70" y="27" width="1370" height="873" />
+    </state>
+    <state x="672" y="200" width="155" height="533" key="VcsDiffUtil.ChangesDialog/70.27.1370.873@70.27.1370.873" timestamp="1584308919386" />
+    <state x="625" y="291" key="com.intellij.ide.util.TipDialog" timestamp="1584649622734">
+      <screen x="70" y="27" width="1370" height="873" />
+    </state>
+    <state x="625" y="291" key="com.intellij.ide.util.TipDialog/70.27.1370.873@70.27.1370.873" timestamp="1584649622734" />
+    <state x="728" y="383" width="481" height="167" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1583355720430">
+      <screen x="70" y="27" width="1370" height="873" />
+    </state>
+    <state x="728" y="383" width="481" height="167" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/70.27.1370.873@70.27.1370.873" timestamp="1583355720430" />
+    <state x="287" y="202" width="925" height="529" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2" timestamp="1583970472012">
+      <screen x="70" y="27" width="1370" height="873" />
+    </state>
+    <state x="287" y="202" width="925" height="529" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2/70.27.1370.873@70.27.1370.873" timestamp="1583970472012" />
+    <state x="409" y="255" width="681" height="424" key="git4idea.merge.GitPullDialog" timestamp="1584308958052">
+      <screen x="70" y="27" width="1370" height="873" />
+    </state>
+    <state x="409" y="255" width="681" height="424" key="git4idea.merge.GitPullDialog/70.27.1370.873@70.27.1370.873" timestamp="1584308958052" />
+    <state x="631" y="214" width="672" height="678" key="search.everywhere.popup" timestamp="1583355920445">
+      <screen x="70" y="27" width="1370" height="873" />
+    </state>
+    <state x="631" y="214" width="672" height="678" key="search.everywhere.popup/70.27.1370.873@70.27.1370.873" timestamp="1583355920445" />
+  </component>
+</project>
