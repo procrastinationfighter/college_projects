@@ -1,0 +1,3 @@
+[submodule "individual_programming_project/Gamma-game"]
+	path = individual_programming_project/Gamma-game
+	url = git@github.com:procrastinationfighter/Gamma-game.git
