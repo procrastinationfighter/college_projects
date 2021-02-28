@@ -1,2 +1,2 @@
 # college_projects
-Smaller projects I had to wrote as tasks in college.
+Smaller projects I had to write as tasks in college. 
