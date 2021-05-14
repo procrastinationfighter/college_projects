@@ -1,0 +1,655 @@
+diff -rupNEZbB minix_src_original/usr/include/minix/callnr.h zad4/usr/include/minix/callnr.h
+--- minix_src_original/usr/include/minix/callnr.h	2021-04-15 21:08:21.167150945 +0200
++++ zad4/usr/include/minix/callnr.h	2021-05-06 21:17:22.508753224 +0200
+@@ -58,8 +58,9 @@
+ #define PM_GETEPINFO		(PM_BASE + 45)
+ #define PM_GETPROCNR		(PM_BASE + 46)
+ #define PM_GETSYSINFO		(PM_BASE + 47)
++#define PM_SETBID       (PM_BASE + 48)
+ 
+-#define NR_PM_CALLS		48	/* highest number from base plus one */
++#define NR_PM_CALLS		49	/* highest number from base plus one */
+ 
+ /*===========================================================================*
+  *				Calls to VFS				     *
+diff -rupNEZbB minix_src_original/usr/include/minix/com.h zad4/usr/include/minix/com.h
+--- minix_src_original/usr/include/minix/com.h	2021-04-15 21:08:21.167150945 +0200
++++ zad4/usr/include/minix/com.h	2021-05-07 00:21:36.081702996 +0200
+@@ -763,6 +763,7 @@
+ #define SCHEDULING_STOP		(SCHEDULING_BASE+3)
+ #define SCHEDULING_SET_NICE	(SCHEDULING_BASE+4)
+ #define SCHEDULING_INHERIT	(SCHEDULING_BASE+5)
++#define SCHEDULING_SETBID	(SCHEDULING_BASE+6)
+ 
+ /*===========================================================================*
+  *              Messages for USB                                             *
+diff -rupNEZbB minix_src_original/usr/include/minix/ipc.h zad4/usr/include/minix/ipc.h
+--- minix_src_original/usr/include/minix/ipc.h	2021-04-15 21:08:21.170484278 +0200
++++ zad4/usr/include/minix/ipc.h	2021-05-07 22:46:24.903840607 +0200
+@@ -988,8 +988,10 @@ typedef struct {
+ 	int quantum;
+ 	int priority;
+ 	int cpu;
++	int bid;
++	int 
+ 
+-	uint8_t padding[40];
++	uint8_t padding[36];
+ } mess_lsys_krn_schedule;
+ _ASSERT_MSG_SIZE(mess_lsys_krn_schedule);
+ 
+diff -rupNEZbB minix_src_original/usr/include/minix/syslib.h zad4/usr/include/minix/syslib.h
+--- minix_src_original/usr/include/minix/syslib.h	2021-04-15 21:08:21.170484278 +0200
++++ zad4/usr/include/minix/syslib.h	2021-05-07 18:22:15.801253692 +0200
+@@ -38,7 +38,7 @@ int sys_exit(void);
+ int sys_trace(int req, endpoint_t proc_ep, long addr, long *data_p);
+ 
+ int sys_schedule(endpoint_t proc_ep, int priority, int quantum, int
+-	cpu);
++	cpu, int bid);
+ int sys_schedctl(unsigned flags, endpoint_t proc_ep, int priority, int
+ 	quantum, int cpu);
+ 
+diff -rupNEZbB minix_src_original/usr/include/unistd.h zad4/usr/include/unistd.h
+--- minix_src_original/usr/include/unistd.h	2021-04-15 21:08:21.177150945 +0200
++++ zad4/usr/include/unistd.h	2021-05-06 21:43:17.595365991 +0200
+@@ -143,6 +143,7 @@ int	 tcsetpgrp(int, pid_t);
+ __aconst char *ttyname(int);
+ int	 unlink(const char *);
+ ssize_t	 write(int, const void *, size_t);
++int setbid(int);
+ 
+ 
+ /*
+diff -rupNEZbB minix_src_original/usr/src/include/unistd.h zad4/usr/src/include/unistd.h
+--- minix_src_original/usr/src/include/unistd.h	2021-04-15 21:08:21.100484276 +0200
++++ zad4/usr/src/include/unistd.h	2021-05-06 21:43:13.818699455 +0200
+@@ -143,6 +143,7 @@ int	 tcsetpgrp(int, pid_t);
+ __aconst char *ttyname(int);
+ int	 unlink(const char *);
+ ssize_t	 write(int, const void *, size_t);
++int setbid(int);
+ 
+ 
+ /*
+diff -rupNEZbB minix_src_original/usr/src/lib/libc/misc/Makefile.inc zad4/usr/src/lib/libc/misc/Makefile.inc
+--- minix_src_original/usr/src/lib/libc/misc/Makefile.inc	2021-04-15 21:08:21.140484277 +0200
++++ zad4/usr/src/lib/libc/misc/Makefile.inc	2021-05-06 21:43:45.832031683 +0200
+@@ -7,4 +7,4 @@
+ SRCS+=	initfini.c
+ 
+ # for -fstack-protector
+-SRCS+=	stack_protector.c
++SRCS+=	stack_protector.c setbid.c
+diff -rupNEZbB minix_src_original/usr/src/lib/libc/misc/setbid.c zad4/usr/src/lib/libc/misc/setbid.c
+--- minix_src_original/usr/src/lib/libc/misc/setbid.c	1970-01-01 01:00:00.000000000 +0100
++++ zad4/usr/src/lib/libc/misc/setbid.c	2021-05-08 20:36:22.580271311 +0200
+@@ -0,0 +1,9 @@
++#include <lib.h>
++#include <unistd.h>
++
++int setbid(int bid) {
++    message m;
++    m.m_m1.m1i1 = bid;
++
++    return _syscall(PM_PROC_NR, PM_SETBID, &m);
++}
+diff -rupNEZbB minix_src_original/usr/src/minix/include/minix/callnr.h zad4/usr/src/minix/include/minix/callnr.h
+--- minix_src_original/usr/src/minix/include/minix/callnr.h	2021-04-15 21:08:21.057150941 +0200
++++ zad4/usr/src/minix/include/minix/callnr.h	2021-05-06 21:18:15.908751369 +0200
+@@ -58,8 +58,9 @@
+ #define PM_GETEPINFO		(PM_BASE + 45)
+ #define PM_GETPROCNR		(PM_BASE + 46)
+ #define PM_GETSYSINFO		(PM_BASE + 47)
++#define PM_SETBID       (PM_BASE + 48)
+ 
+-#define NR_PM_CALLS		48	/* highest number from base plus one */
++#define NR_PM_CALLS		49	/* highest number from base plus one */
+ 
+ /*===========================================================================*
+  *				Calls to VFS				     *
+diff -rupNEZbB minix_src_original/usr/src/minix/include/minix/com.h zad4/usr/src/minix/include/minix/com.h
+--- minix_src_original/usr/src/minix/include/minix/com.h	2021-04-15 21:08:21.057150941 +0200
++++ zad4/usr/src/minix/include/minix/com.h	2021-05-07 00:21:05.711704053 +0200
+@@ -763,6 +763,7 @@
+ #define SCHEDULING_STOP		(SCHEDULING_BASE+3)
+ #define SCHEDULING_SET_NICE	(SCHEDULING_BASE+4)
+ #define SCHEDULING_INHERIT	(SCHEDULING_BASE+5)
++#define SCHEDULING_SETBID	(SCHEDULING_BASE+6)
+ 
+ /*===========================================================================*
+  *              Messages for USB                                             *
+diff -rupNEZbB minix_src_original/usr/src/minix/include/minix/ipc.h zad4/usr/src/minix/include/minix/ipc.h
+--- minix_src_original/usr/src/minix/include/minix/ipc.h	2021-04-15 21:08:21.060484275 +0200
++++ zad4/usr/src/minix/include/minix/ipc.h	2021-05-07 23:44:47.510610611 +0200
+@@ -14,6 +14,14 @@
+ #define M_PATH_STRING_MAX  40
+ 
+ typedef struct {
++	endpoint_t endpoint;
++	int bid;
++
++	uint8_t padding[48];
++} mess_setbid;
++_ASSERT_MSG_SIZE(mess_setbid);
++
++typedef struct {
+ 	uint8_t data[56];
+ } mess_u8;
+ _ASSERT_MSG_SIZE(mess_u8);
+@@ -988,8 +996,10 @@ typedef struct {
+ 	int quantum;
+ 	int priority;
+ 	int cpu;
++	int bid;
++	int is_auction;
+ 
+-	uint8_t padding[40];
++	uint8_t padding[32];
+ } mess_lsys_krn_schedule;
+ _ASSERT_MSG_SIZE(mess_lsys_krn_schedule);
+ 
+@@ -2027,6 +2037,8 @@ typedef struct {
+ 	endpoint_t m_source;		/* who sent the message */
+ 	int m_type;			/* what kind of message is it */
+ 	union {
++		mess_setbid		m_setbid;
++
+ 		mess_u8			m_u8;
+ 		mess_u16		m_u16;
+ 		mess_u32		m_u32;
+diff -rupNEZbB minix_src_original/usr/src/minix/include/minix/syslib.h zad4/usr/src/minix/include/minix/syslib.h
+--- minix_src_original/usr/src/minix/include/minix/syslib.h	2021-04-15 21:08:21.060484275 +0200
++++ zad4/usr/src/minix/include/minix/syslib.h	2021-05-07 23:25:59.913910712 +0200
+@@ -38,7 +38,7 @@ int sys_exit(void);
+ int sys_trace(int req, endpoint_t proc_ep, long addr, long *data_p);
+ 
+ int sys_schedule(endpoint_t proc_ep, int priority, int quantum, int
+-	cpu);
++	cpu, int bid, int is_auction);
+ int sys_schedctl(unsigned flags, endpoint_t proc_ep, int priority, int
+ 	quantum, int cpu);
+ 
+diff -rupNEZbB minix_src_original/usr/src/minix/kernel/proc.c zad4/usr/src/minix/kernel/proc.c
+--- minix_src_original/usr/src/minix/kernel/proc.c	2021-04-15 21:08:21.063817608 +0200
++++ zad4/usr/src/minix/kernel/proc.c	2021-05-09 01:36:59.167468532 +0200
+@@ -116,7 +116,7 @@ static void set_idle_name(char * name, i
+ 		break;							\
+ 	}
+ 
+-void proc_init(void)
++void proc_init(void) /* so_2021 */
+ {
+ 	struct proc * rp;
+ 	struct priv *sp;
+@@ -135,6 +135,8 @@ void proc_init(void)
+ 		rp->p_priority = 0;		/* no priority */
+ 		rp->p_quantum_size_ms = 0;	/* no quantum size */
+ 
++		rp->sched_bid = 0;
++
+ 		/* arch-specific initialization */
+ 		arch_proc_reset(rp);
+ 	}
+@@ -1711,7 +1713,7 @@ void dequeue(struct proc *rp)
+ /*===========================================================================*
+  *				pick_proc				     * 
+  *===========================================================================*/
+-static struct proc * pick_proc(void)
++static struct proc * pick_proc(void)	/* so_2021 */
+ {
+ /* Decide who to run now.  A new process is selected an returned.
+  * When a billable process is selected, record it in 'bill_ptr', so that the 
+@@ -1733,6 +1735,67 @@ static struct proc * pick_proc(void)
+ 		TRACE(VF_PICKPROC, printf("cpu %d queue %d empty\n", cpuid, q););
+ 		continue;
+ 	}
++
++	if (q == AUCTION_Q) {
++		int former_min = -1;
++		int winner = 0;
++
++		while (!winner) {
++			// Find current minimal bid higher than former_min and check if it's unique.
++			int curr_min = MAX_BID + 1, min_count = 0;
++			struct proc *curr = rp;
++
++			while (curr) {
++				int curr_bid = curr->sched_bid;
++
++				if (curr_bid > former_min && curr_bid < curr_min) {
++					curr_min = curr_bid;
++					min_count = 1;
++				} else if (curr_bid == curr_min) {
++					min_count += 1;
++				}
++
++				curr = curr->p_nextready;
++			}
++
++			if (min_count == 1) {
++				winner = curr_min;
++			} else if (min_count == 0) {
++				winner = former_min;
++			} else {
++				former_min = curr_min;
++			}
++		}
++
++		/* Find first process with winner bid and place it on the front of the queue. */
++		struct proc *curr = rp, *prev = NULL;
++		while (curr) {
++			if (curr->sched_bid == winner) {
++				if (curr != rp) {
++					/* If it's not the first element, move it to the front. */
++
++					prev->p_nextready = curr->p_nextready;
++
++					if (curr->p_nextready == NULL) {
++						/* If it's the last element, modify rdy_tail. */
++						struct proc **rdy_tail = get_cpulocal_var(run_q_tail);
++						rdy_tail[q] = prev;
++					}
++
++					rdy_head[q] = curr;
++					curr->p_nextready = rp;
++				}
++				
++				break;
++			}
++
++			prev = curr;
++			curr = curr->p_nextready;
++		}
++		
++		rp = curr; 
++	}
++
+ 	assert(proc_is_runnable(rp));
+ 	if (priv(rp)->s_flags & BILLABLE)	 	
+ 		get_cpulocal_var(bill_ptr) = rp; /* bill for system time */
+diff -rupNEZbB minix_src_original/usr/src/minix/kernel/proc.h zad4/usr/src/minix/kernel/proc.h
+--- minix_src_original/usr/src/minix/kernel/proc.h	2021-04-15 21:08:21.063817608 +0200
++++ zad4/usr/src/minix/kernel/proc.h	2021-05-07 21:45:32.647066803 +0200
+@@ -131,6 +131,7 @@ struct proc {
+ #if DEBUG_TRACE
+   int p_schedules;
+ #endif
++  int sched_bid;
+ };
+ 
+ #endif /* __ASSEMBLY__ */
+@@ -282,4 +283,8 @@ int mini_send(struct proc *caller_ptr, e
+ 
+ #endif /* __ASSEMBLY__ */
+ 
++// setbid, custom call
++#define AUCTION_Q 8
++#define MAX_BID 100
++
+ #endif /* PROC_H */
+diff -rupNEZbB minix_src_original/usr/src/minix/kernel/system/do_fork.c zad4/usr/src/minix/kernel/system/do_fork.c
+--- minix_src_original/usr/src/minix/kernel/system/do_fork.c	2021-04-15 21:08:21.063817608 +0200
++++ zad4/usr/src/minix/kernel/system/do_fork.c	2021-05-07 23:31:25.833920333 +0200
+@@ -23,7 +23,7 @@
+ /*===========================================================================*
+  *				do_fork					     *
+  *===========================================================================*/
+-int do_fork(struct proc * caller, message * m_ptr)
++int do_fork(struct proc * caller, message * m_ptr) /* so_2021 */
+ {
+ /* Handle sys_fork().
+  * m_lsys_krn_sys_fork.endpt has forked.
+@@ -80,6 +80,8 @@ int do_fork(struct proc * caller, messag
+   rpc->p_virt_left = 0;		/* disable, clear the process-virtual timers */
+   rpc->p_prof_left = 0;
+ 
++  rpc->sched_bid = 0; 
++
+   /* Mark process name as being a forked copy */
+   namelen = strlen(rpc->p_name);
+ #define FORKSTR "*F"
+diff -rupNEZbB minix_src_original/usr/src/minix/kernel/system/do_schedule.c zad4/usr/src/minix/kernel/system/do_schedule.c
+--- minix_src_original/usr/src/minix/kernel/system/do_schedule.c	2021-04-15 21:08:21.063817608 +0200
++++ zad4/usr/src/minix/kernel/system/do_schedule.c	2021-05-08 19:01:29.670104036 +0200
+@@ -5,7 +5,7 @@
+ /*===========================================================================*
+  *				do_schedule				     *
+  *===========================================================================*/
+-int do_schedule(struct proc * caller, message * m_ptr)
++int do_schedule(struct proc * caller, message * m_ptr) /* so_2021 */
+ {
+ 	struct proc *p;
+ 	int proc_nr;
+@@ -20,6 +20,22 @@ int do_schedule(struct proc * caller, me
+ 	if (caller != p->p_scheduler)
+ 		return(EPERM);
+ 
++	/* Change bid. */
++	int new_bid = m_ptr->m_lsys_krn_schedule.bid;
++
++	if (m_ptr->m_lsys_krn_schedule.is_auction) {
++		if (new_bid < 0 || new_bid > MAX_BID) {
++			return EINVAL;
++		}
++
++		if ((new_bid > 0 && p->sched_bid > 0) || (new_bid == 0 && p->sched_bid == 0)) {
++			return EPERM;
++		}
++
++		p->sched_bid = new_bid;
++		return OK;
++	}
++
+ 	/* Try to schedule the process. */
+ 	priority = m_ptr->m_lsys_krn_schedule.priority;
+ 	quantum = m_ptr->m_lsys_krn_schedule.quantum;
+diff -rupNEZbB minix_src_original/usr/src/minix/kernel/system.h zad4/usr/src/minix/kernel/system.h
+--- minix_src_original/usr/src/minix/kernel/system.h	2021-04-15 21:08:21.063817608 +0200
++++ zad4/usr/src/minix/kernel/system.h	2021-05-07 18:32:24.141286369 +0200
+@@ -200,7 +200,7 @@ int do_setmcontext(struct proc * caller,
+ #define do_setmcontext NULL
+ #endif
+ 
+-int do_schedule(struct proc * caller, message *m_ptr);
++int do_schedule(struct proc * caller, message *m_ptr); /* so_2021*/
+ int do_schedctl(struct proc * caller, message *m_ptr);
+ 
+ int do_statectl(struct proc * caller, message *m_ptr);
+diff -rupNEZbB minix_src_original/usr/src/minix/lib/libsys/sys_schedule.c zad4/usr/src/minix/lib/libsys/sys_schedule.c
+--- minix_src_original/usr/src/minix/lib/libsys/sys_schedule.c	2021-04-15 21:08:21.080484275 +0200
++++ zad4/usr/src/minix/lib/libsys/sys_schedule.c	2021-05-09 15:17:58.445160140 +0200
+@@ -1,9 +1,11 @@
+ #include "syslib.h"
+ 
+-int sys_schedule(endpoint_t proc_ep,
++int sys_schedule(endpoint_t proc_ep, /* so_2021 */
+ 			int priority,
+ 			int quantum,
+-			int cpu)
++			int cpu,
++			int bid,
++			int is_auction)
+ {
+ 	message m;
+ 
+@@ -11,5 +13,8 @@ int sys_schedule(endpoint_t proc_ep,
+ 	m.m_lsys_krn_schedule.priority = priority;
+ 	m.m_lsys_krn_schedule.quantum  = quantum;
+ 	m.m_lsys_krn_schedule.cpu = cpu;
++	m.m_lsys_krn_schedule.bid = bid;
++	m.m_lsys_krn_schedule.is_auction = is_auction;
++
+ 	return(_kernel_call(SYS_SCHEDULE, &m));
+ }
+diff -rupNEZbB minix_src_original/usr/src/minix/servers/pm/Makefile zad4/usr/src/minix/servers/pm/Makefile
+--- minix_src_original/usr/src/minix/servers/pm/Makefile	2021-04-15 21:08:21.087150942 +0200
++++ zad4/usr/src/minix/servers/pm/Makefile	2021-05-06 21:53:57.925343812 +0200
+@@ -4,7 +4,7 @@
+ PROG=	pm
+ SRCS=	main.c forkexit.c exec.c time.c alarm.c \
+ 	signal.c utility.c table.c trace.c getset.c misc.c \
+-	profile.c mcontext.c schedule.c
++	profile.c mcontext.c schedule.c setbid.c
+ 
+ DPADD+=	${LIBSYS} ${LIBTIMERS}
+ LDADD+=	-lsys -ltimers
+diff -rupNEZbB minix_src_original/usr/src/minix/servers/pm/proto.h zad4/usr/src/minix/servers/pm/proto.h
+--- minix_src_original/usr/src/minix/servers/pm/proto.h	2021-04-15 21:08:21.087150942 +0200
++++ zad4/usr/src/minix/servers/pm/proto.h	2021-05-06 21:32:12.915389036 +0200
+@@ -56,6 +56,9 @@ int sched_nice(struct mproc *rmp, int ni
+ int do_sprofile(void);
+ int do_cprofile(void);
+ 
++/* setbid.c */
++int do_setbid(void); /* so_2021 */
++
+ /* signal.c */
+ int do_kill(void);
+ int do_srv_kill(void);
+diff -rupNEZbB minix_src_original/usr/src/minix/servers/pm/schedule.c zad4/usr/src/minix/servers/pm/schedule.c
+--- minix_src_original/usr/src/minix/servers/pm/schedule.c	2021-04-15 21:08:21.087150942 +0200
++++ zad4/usr/src/minix/servers/pm/schedule.c	2021-05-07 00:46:45.114983526 +0200
+@@ -104,7 +104,7 @@ int sched_nice(struct mproc *rmp, int ni
+ 
+ 	m.m_pm_sched_scheduling_set_nice.endpoint	= rmp->mp_endpoint;
+ 	m.m_pm_sched_scheduling_set_nice.maxprio	= maxprio;
+-	if ((rv = _taskcall(rmp->mp_scheduler, SCHEDULING_SET_NICE, &m))) {
++	if ((rv = _taskcall(mp->mp_scheduler, SCHEDULING_SET_NICE, &m))) {
+ 		return rv;
+ 	}
+ 
+diff -rupNEZbB minix_src_original/usr/src/minix/servers/pm/setbid.c zad4/usr/src/minix/servers/pm/setbid.c
+--- minix_src_original/usr/src/minix/servers/pm/setbid.c	1970-01-01 01:00:00.000000000 +0100
++++ zad4/usr/src/minix/servers/pm/setbid.c	2021-05-08 20:36:14.603604414 +0200
+@@ -0,0 +1,12 @@
++#include "pm.h"
++#include "mproc.h"
++#include <lib.h>
++
++int do_setbid(void) /* so_2021 */
++{
++  message m;
++  m.m_setbid.bid = m_in.m_m1.m1i1;
++  m.m_setbid.endpoint = mp->mp_endpoint;
++  
++	return _taskcall(mp->mp_scheduler, SCHEDULING_SETBID, &m);
++}
+\ Brak znaku nowej linii na końcu pliku
+diff -rupNEZbB minix_src_original/usr/src/minix/servers/pm/table.c zad4/usr/src/minix/servers/pm/table.c
+--- minix_src_original/usr/src/minix/servers/pm/table.c	2021-04-15 21:08:21.087150942 +0200
++++ zad4/usr/src/minix/servers/pm/table.c	2021-05-06 21:34:53.308716807 +0200
+@@ -58,5 +58,6 @@ int (* const call_vec[NR_PM_CALLS])(void
+ 	CALL(PM_EXEC_RESTART)	= do_execrestart,
+ 	CALL(PM_GETEPINFO)	= do_getepinfo,		/* getepinfo(2) */
+ 	CALL(PM_GETPROCNR)	= do_getprocnr,		/* getprocnr(2) */
+-	CALL(PM_GETSYSINFO)	= do_getsysinfo		/* getsysinfo(2) */
++	CALL(PM_GETSYSINFO)	= do_getsysinfo,	/* getsysinfo(2) */
++	CALL(PM_SETBID) 	= do_setbid			/* so_2021 */
+ };
+diff -rupNEZbB minix_src_original/usr/src/minix/servers/sched/main.c zad4/usr/src/minix/servers/sched/main.c
+--- minix_src_original/usr/src/minix/servers/sched/main.c	2021-04-15 21:08:21.087150942 +0200
++++ zad4/usr/src/minix/servers/sched/main.c	2021-05-08 20:35:57.380270572 +0200
+@@ -18,7 +18,7 @@ struct machine machine;		/* machine info
+ /*===========================================================================*
+  *				main					     *
+  *===========================================================================*/
+-int main(void)
++int main(void) /* so_2021 */
+ {
+ 	/* Main routine of the scheduler. */
+ 	message m_in;	/* the incoming message itself is kept here. */
+@@ -87,6 +87,9 @@ int main(void)
+ 				result = EPERM;
+ 			}
+ 			break;
++		case SCHEDULING_SETBID:
++			result = do_setbid(&m_in);
++			break;
+ 		default:
+ 			result = no_sys(who_e, call_nr);
+ 		}
+diff -rupNEZbB minix_src_original/usr/src/minix/servers/sched/proto.h zad4/usr/src/minix/servers/sched/proto.h
+--- minix_src_original/usr/src/minix/servers/sched/proto.h	2021-04-15 21:08:21.087150942 +0200
++++ zad4/usr/src/minix/servers/sched/proto.h	2021-05-07 00:23:25.355032502 +0200
+@@ -12,6 +12,7 @@ int do_noquantum(message *m_ptr);
+ int do_start_scheduling(message *m_ptr);
+ int do_stop_scheduling(message *m_ptr);
+ int do_nice(message *m_ptr);
++int do_setbid(message *m_ptr); /* so_2021 */
+ void init_scheduling(void);
+ 
+ /* utility.c */
+diff -rupNEZbB minix_src_original/usr/src/minix/servers/sched/schedule.c zad4/usr/src/minix/servers/sched/schedule.c
+--- minix_src_original/usr/src/minix/servers/sched/schedule.c	2021-04-15 21:08:21.087150942 +0200
++++ zad4/usr/src/minix/servers/sched/schedule.c	2021-05-09 17:53:33.644755320 +0200
+@@ -87,7 +87,7 @@ static void pick_cpu(struct schedproc *
+  *				do_noquantum				     *
+  *===========================================================================*/
+ 
+-int do_noquantum(message *m_ptr)
++int do_noquantum(message *m_ptr)	/* so_2021 */
+ {
+ 	register struct schedproc *rmp;
+ 	int rv, proc_nr_n;
+@@ -99,8 +99,13 @@ int do_noquantum(message *m_ptr)
+ 	}
+ 
+ 	rmp = &schedproc[proc_nr_n];
+-	if (rmp->priority < MIN_USER_Q) {
++	if (rmp->priority < MIN_USER_Q && rmp->priority != AUCTION_Q) {
+ 		rmp->priority += 1; /* lower priority */
++
++		if (rmp->priority == AUCTION_Q) {
++			/* Skip the auction queue. Currently does not check if AUCTION_Q = 15. */
++			rmp->priority += 1;
++		}
+ 	}
+ 
+ 	if ((rv = schedule_process_local(rmp)) != OK) {
+@@ -140,7 +145,7 @@ int do_stop_scheduling(message *m_ptr)
+ /*===========================================================================*
+  *				do_start_scheduling			     *
+  *===========================================================================*/
+-int do_start_scheduling(message *m_ptr)
++int do_start_scheduling(message *m_ptr)	/* so_2021 */
+ {
+ 	register struct schedproc *rmp;
+ 	int rv, proc_nr_n, parent_nr_n;
+@@ -164,6 +169,11 @@ int do_start_scheduling(message *m_ptr)
+ 	rmp->endpoint     = m_ptr->m_lsys_sched_scheduling_start.endpoint;
+ 	rmp->parent       = m_ptr->m_lsys_sched_scheduling_start.parent;
+ 	rmp->max_priority = m_ptr->m_lsys_sched_scheduling_start.maxprio;
++
++	if (rmp->max_priority == AUCTION_Q) {
++		rmp->max_priority += 1;
++	}
++
+ 	if (rmp->max_priority >= NR_SCHED_QUEUES) {
+ 		return EINVAL;
+ 	}
+@@ -177,6 +187,10 @@ int do_start_scheduling(message *m_ptr)
+ 		rmp->priority   = USER_Q;
+ 		rmp->time_slice = DEFAULT_USER_TIME_SLICE;
+ 
++		if (rmp->priority == AUCTION_Q) {
++			rmp->priority += 1;
++		}
++
+ 		/*
+ 		 * Since kernel never changes the cpu of a process, all are
+ 		 * started on the BSP and the userspace scheduling hasn't
+@@ -209,6 +223,10 @@ int do_start_scheduling(message *m_ptr)
+ 
+ 		rmp->priority = schedproc[parent_nr_n].priority;
+ 		rmp->time_slice = schedproc[parent_nr_n].time_slice;
++
++		if (rmp->priority == AUCTION_Q) {
++			rmp->priority += 1;
++		}
+ 		break;
+ 		
+ 	default: 
+@@ -254,7 +272,7 @@ int do_start_scheduling(message *m_ptr)
+ /*===========================================================================*
+  *				do_nice					     *
+  *===========================================================================*/
+-int do_nice(message *m_ptr)
++int do_nice(message *m_ptr) /* so_2021 */
+ {
+ 	struct schedproc *rmp;
+ 	int rv;
+@@ -273,6 +291,11 @@ int do_nice(message *m_ptr)
+ 
+ 	rmp = &schedproc[proc_nr_n];
+ 	new_q = m_ptr->m_pm_sched_scheduling_set_nice.maxprio;
++
++	if (new_q == AUCTION_Q) {
++		new_q += 1;
++	}
++
+ 	if (new_q >= NR_SCHED_QUEUES) {
+ 		return EINVAL;
+ 	}
+@@ -293,11 +316,46 @@ int do_nice(message *m_ptr)
+ 
+ 	return rv;
+ }
++/*===========================================================================*
++ *				do_setbid			     *
++ *===========================================================================*/
++int do_setbid(message *m_ptr)	/* so_2021 */
++{
++	struct schedproc *rmp;
++	int rv;
++	int proc_nr_n;
++	unsigned old_q;
++
++	if (!accept_message(m_ptr))
++		return EPERM;
++
++	if (sched_isokendpt(m_ptr->m_setbid.endpoint, &proc_nr_n) != OK) {
++		printf("SCHED: WARNING: got an invalid endpoint in OoQ msg "
++		"%d\n", m_ptr->m_setbid.endpoint);
++		return EBADEPT;
++	}
++
++	rmp = &schedproc[proc_nr_n];
++
++	old_q = rmp->priority;
++
++	if (m_ptr->m_setbid.bid != 0) {
++		rmp->priority = AUCTION_Q;
++	} else {
++		rmp->priority = rmp->max_priority;
++	}
++
++	if ((rv = sys_schedule(rmp->endpoint, rmp->priority, -1, -1, m_ptr->m_setbid.bid, 1)) != OK) {
++		rmp->priority = old_q;
++	}
++
++	return rv;
++}
+ 
+ /*===========================================================================*
+  *				schedule_process			     *
+  *===========================================================================*/
+-static int schedule_process(struct schedproc * rmp, unsigned flags)
++static int schedule_process(struct schedproc * rmp, unsigned flags) /* so_2021 */
+ {
+ 	int err;
+ 	int new_prio, new_quantum, new_cpu;
+@@ -320,7 +378,7 @@ static int schedule_process(struct sched
+ 		new_cpu = -1;
+ 
+ 	if ((err = sys_schedule(rmp->endpoint, new_prio,
+-		new_quantum, new_cpu)) != OK) {
++		new_quantum, new_cpu, 0, 0)) != OK) {
+ 		printf("PM: An error occurred when trying to schedule %d: %d\n",
+ 		rmp->endpoint, err);
+ 	}
+@@ -349,15 +407,21 @@ void init_scheduling(void)
+  * quantum. This function will find all proccesses that have been bumped down,
+  * and pulls them back up. This default policy will soon be changed.
+  */
+-static void balance_queues(minix_timer_t *tp)
++static void balance_queues(minix_timer_t *tp) /* so_2021 */
+ {
+ 	struct schedproc *rmp;
+ 	int proc_nr;
+ 
+ 	for (proc_nr=0, rmp=schedproc; proc_nr < NR_PROCS; proc_nr++, rmp++) {
+ 		if (rmp->flags & IN_USE) {
+-			if (rmp->priority > rmp->max_priority) {
+-				rmp->priority -= 1; /* increase priority */
++			if (rmp->priority > rmp->max_priority && rmp->priority != AUCTION_Q) {
++				rmp->priority -= 1; /* decrease priority */
++
++				if (rmp->priority == AUCTION_Q) {
++					/* We assured that max_priority is not equal to AUCTION_Q. */
++					rmp->priority -= 1;
++				}
++
+ 				schedule_process_local(rmp);
+ 			}
+ 		}
