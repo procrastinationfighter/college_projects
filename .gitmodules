@@ -1,3 +1,6 @@
 [submodule "individual_programming_project/Gamma-game"]
 	path = individual_programming_project/Gamma-game
 	url = git@github.com:procrastinationfighter/Gamma-game.git
+[submodule "computer_networks/sik-http-server"]
+	path = computer_networks/sik-http-server
+	url = https://github.com/procrastinationfighter/sik-http-server
