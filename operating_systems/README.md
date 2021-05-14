@@ -1,5 +1,5 @@
 # Operating systems, summer semester 2020/2021
-## Tasks 1-2: assembly language:
+## Tasks 1-2: x86_64 assembly language:
 1. diakrytynizator - assembly language basics
 2. notec - assembly language involving basic concurrency
 
