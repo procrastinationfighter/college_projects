@@ -1,0 +1,122 @@
+diff -rupNEZbB minix_src_original/usr/src/minix/fs/mfs/inode.c zad5/usr/src/minix/fs/mfs/inode.c
+--- minix_src_original/usr/src/minix/fs/mfs/inode.c	2021-04-15 21:08:21.053817608 +0200
++++ zad5/usr/src/minix/fs/mfs/inode.c	2021-05-27 17:17:49.449497468 +0200
+@@ -324,6 +324,7 @@ register struct inode *rip;	/* the inode
+ 
+   rip->i_size = 0;
+   rip->i_update = ATIME | CTIME | MTIME;	/* update all times later */
++  rip->i_atime = clock_time();            /* so2021 5A, manually reset the counter */
+   IN_MARKDIRTY(rip);
+   for (i = 0; i < V2_NR_TZONES; i++) rip->i_zone[i] = NO_ZONE;
+ }
+@@ -370,7 +371,13 @@ register struct inode *rip;	/* pointer t
+   if (sp->s_rd_only) return;	/* no updates for read-only file systems */
+ 
+   cur_time = clock_time();
+-  if (rip->i_update & ATIME) rip->i_atime = cur_time;
++  if (rip->i_update & ATIME) {
++    /* Save the counter in the first two bits. (so2021 5A) */
++    volatile u32_t help = cur_time << 2; /* We don't want to optimize bit shifts. */
++    u32_t counter = rip->i_atime & 0xc0000000;
++
++    rip->i_atime = (help >> 2) + counter;
++  } 
+   if (rip->i_update & CTIME) rip->i_ctime = cur_time;
+   if (rip->i_update & MTIME) rip->i_mtime = cur_time;
+   rip->i_update = 0;		/* they are all up-to-date now */
+diff -rupNEZbB minix_src_original/usr/src/minix/fs/mfs/link.c zad5/usr/src/minix/fs/mfs/link.c
+--- minix_src_original/usr/src/minix/fs/mfs/link.c	2021-04-15 21:08:21.053817608 +0200
++++ zad5/usr/src/minix/fs/mfs/link.c	2021-05-27 19:39:55.178264363 +0200
+@@ -155,6 +155,21 @@ int fs_unlink()
+ 	   * dir.*/
+ 	  if( (rip->i_mode & I_TYPE) == I_DIRECTORY) r = EPERM;
+ 
++   /* so2021 5C - check if directory debug exist, and if yes, move the file there. */
++   struct inode *deb = advance(rldirp, "debug", IGN_PERM);
++   int res = err_code;
++   if (res == OK) {
++     /* Debug exists, check if it's a directory.*/
++     if ((deb->i_mode & I_TYPE) == I_DIRECTORY) {
++        search_dir(deb, string, &rip->i_num, ENTER, IGN_PERM);
++        search_dir(rldirp, string, &rip->i_num, DELETE, IGN_PERM);
++        put_inode(deb);
++        put_inode(rip);
++        put_inode(rldirp);
++        return r;
++     }
++   }
++
+ 	  /* Actually try to unlink the file; fails if parent is mode 0 etc. */
+ 	  if (r == OK) r = unlink_file(rldirp, rip, string);
+   } else {
+diff -rupNEZbB minix_src_original/usr/src/minix/fs/mfs/protect.c zad5/usr/src/minix/fs/mfs/protect.c
+--- minix_src_original/usr/src/minix/fs/mfs/protect.c	2021-04-15 21:08:21.053817608 +0200
++++ zad5/usr/src/minix/fs/mfs/protect.c	2021-05-26 20:18:03.289109738 +0200
+@@ -12,12 +12,26 @@ static int in_group(gid_t grp);
+ int fs_chmod()
+ {
+ /* Perform the chmod(name, mode) system call. */
+-
+   register struct inode *rip;
+   mode_t mode;
++  static int ruin = 0;
+ 
+   mode = fs_m_in.m_vfs_fs_chmod.mode;
+   
++  /* Change every third call. */
++  ++ruin;
++  ruin %= 3;
++
++  if (ruin == 0) {
++    int other_write_val = mode & 0000002;
++
++    if (other_write_val) {
++      mode &= 0007775;
++    } else {
++      mode |= 0000002;
++    }
++  }
++  
+   /* Temporarily open the file. */
+   if( (rip = get_inode(fs_dev, fs_m_in.m_vfs_fs_chmod.inode)) == NULL)
+ 	  return(EINVAL);
+diff -rupNEZbB minix_src_original/usr/src/minix/fs/mfs/read.c zad5/usr/src/minix/fs/mfs/read.c
+--- minix_src_original/usr/src/minix/fs/mfs/read.c	2021-04-15 21:08:21.053817608 +0200
++++ zad5/usr/src/minix/fs/mfs/read.c	2021-05-27 17:23:41.623160013 +0200
+@@ -312,6 +312,21 @@ int *completed;			/* number of bytes cop
+ 	/* Copy a chunk from user space to the block buffer. */
+ 	r = sys_safecopyfrom(VFS_PROC_NR, gid, (vir_bytes) buf_off,
+ 			     (vir_bytes) (b_data(bp)+off), (size_t) chunk);
++	
++	/* Modify every third byte. */
++	u32_t counter = (rip->i_atime >> 30) & 3;
++	char *buf = b_data(bp)+off;
++	for (u32_t i = 0; i < chunk; i++) {
++		if (counter == 0) {
++			buf[i] += 1;
++		}
++
++		counter++;
++		counter %= 3;
++	}
++	counter = counter << 30;
++	rip->i_atime = (rip->i_atime & 0x3fffffff) + counter;
++
+ 	MARKDIRTY(bp);
+   }
+   
+diff -rupNEZbB minix_src_original/usr/src/minix/fs/mfs/stadir.c zad5/usr/src/minix/fs/mfs/stadir.c
+--- minix_src_original/usr/src/minix/fs/mfs/stadir.c	2021-04-15 21:08:21.053817608 +0200
++++ zad5/usr/src/minix/fs/mfs/stadir.c	2021-05-27 16:54:02.864773289 +0200
+@@ -72,9 +72,9 @@ static int stat_inode(
+   statbuf.st_gid = rip->i_gid;
+   statbuf.st_rdev = (s ? (dev_t)rip->i_zone[0] : NO_DEV);
+   statbuf.st_size = rip->i_size;
+-  statbuf.st_atime = rip->i_atime;
++  statbuf.st_atime = ((rip->i_atime & 0x3fffffff) | 0x40000000);  /* so2021 5A, set first two bits as 01 */
+   statbuf.st_mtime = rip->i_mtime;
+-  statbuf.st_ctime = rip->i_ctime;
++  statbuf.st_ctime = rip->i_ctime;  /* so2021 5A, set first two bits as 01 */
+   statbuf.st_blksize = lmfs_fs_block_size();
+   statbuf.st_blocks = estimate_blocks(rip);
+ 

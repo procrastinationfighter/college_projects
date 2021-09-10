@@ -6,5 +6,5 @@
 ## Tasks 3-6: modifying Minix's source code
 3. negate exit - custom call to PM server
 4. bid scheduling - process scheduling
-5. ???
-6. ???
+5. filesystem modifications - "breaking" a filesystem
+6. buffer device - creating a custom device
