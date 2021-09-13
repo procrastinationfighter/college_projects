@@ -4,3 +4,6 @@
 [submodule "computer_networks/sik-http-server"]
 	path = computer_networks/sik-http-server
 	url = https://github.com/procrastinationfighter/sik-http-server
+[submodule "jnp2/tictactoe-telegram-bot"]
+	path = jnp2/tictactoe-telegram-bot
+	url = https://github.com/procrastinationfighter/tictactoe-telegram-bot.git
