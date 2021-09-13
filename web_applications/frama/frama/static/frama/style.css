@@ -1,0 +1,245 @@
+:root {
+    /* Values. */
+    --tab_label_height: 30px;
+    --header_height: 50px;
+}
+
+:root {
+    /* Colors. */
+    --main_text_color: #000000;
+    --header_color: #003049;
+    --grid_background_color: #ff9999;
+    --header_text_color: #ffffff;
+    --code_background_color: #eae2b7;
+    --file_selection_background_color: #fcbf49;
+    --focus_background_color: #fcbf49;
+    --tab_background_color: #f77f00;
+    --tab_button_checked_color: #1e90ff;
+    --tab_button_unchecked_color: #003049;
+    --tab_button_hovered_color: #669bbc;
+    --tab_content_background_color: #d62828;
+}
+
+/* Darker theme. */
+/*
+:root {
+    --main_text_color: #ffffff;
+    --header_color: #4d194d;
+    --grid_background_color: #0b525b;
+    --header_text_color: #ffffff;
+    --code_background_color: #414141;
+    --file_selection_background_color: #525252;
+    --focus_background_color: #525252;
+    --tab_background_color: #272640;
+    --tab_button_checked_color: #312244;
+    --tab_button_unchecked_color: #003049;
+    --tab_button_hovered_color: #669bbc;
+    --tab_content_background_color: #1b3a4b;
+} */
+
+body {
+    color: var(--main_text_color);
+    margin: 0;
+}
+
+/* Outer grid that holds header and the main grid. */
+.outer_grid {
+    display: grid;
+    height: 100vh;
+    grid-template-rows: var(--header_height) calc(100vh - var(--header_height));
+}
+
+/* Header and its elements. */
+.header {
+    grid-row: 1;
+    background-color: var(--header_color);
+    color: var(--header_text_color);
+    padding: 15px;
+}
+
+.header_element {
+    display: inline;
+    padding: 10px;
+    cursor: pointer
+}
+
+.header_element a {
+    all: unset;
+}
+
+/* Class for add. */
+.side_page {
+    grid-row: 2;
+    width: 100vw;
+    background-color: var(--file_selection_background_color);
+}
+
+.side_page form {
+    margin-left: 45%;
+}
+
+.side_page h2 {
+    margin-left: 45%;
+}
+
+.side_page a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Grid elements. */
+.main_grid {
+    grid-row: 2;
+    grid-template-columns: 2fr 6fr 3fr;
+    grid-template-rows: 3fr 1fr;
+    background-color: var(--grid_background_color);
+    display: grid;
+    grid-gap: 5px;
+    width: 100vw;
+}
+
+.main_grid_item {
+    padding: 15px;
+    white-space: nowrap;
+    overflow: auto;
+    min-width: 0;
+    min-height: 0;
+    font-family: "Roboto Thin", serif;
+    font-size: large;
+}
+
+.item_file_selection {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    background-color: var(--file_selection_background_color);
+}
+
+/* Modified so that the list on the left seems clickable. */
+.item_file_selection a {
+    text-decoration: none;
+    color: inherit;
+}
+
+
+.item_program_code {
+    grid-column: 2;
+    grid-row: 1;
+    background-color: var(--code_background_color);
+    font-family: "JetBrains Mono", serif;
+    font-size: large;
+    padding: 5px;
+}
+
+.item_focus {
+    grid-column: 3;
+    grid-row: 1;
+    background-color: var(--focus_background_color);
+    white-space: initial;
+}
+
+.item_tab_data {
+    grid-column: 2 /span 2;
+    grid-row: 2;
+    display: flex;
+    flex-wrap: wrap;
+    background-color: var(--tab_background_color);
+    padding: 0;
+}
+
+/* Tabs. */
+
+.item_tab_data input[type="radio"] {
+    display: none;
+}
+
+.item_tab_data label {
+    width: 20%;
+    height: var(--tab_label_height);
+    color: var(--header_text_color);
+    background-color: var(--tab_button_unchecked_color);
+    order: 0;
+    overflow: hidden;
+    font-size: 100%;
+    text-align: center;
+}
+
+.item_tab_data .tab {
+    width: 100%;
+    height: calc(100% - var(--tab_label_height));
+    background-color: var(--tab_content_background_color);
+    order: 1;
+    display: none;
+    overflow: auto;
+    font-size: 20px;
+}
+
+.item_tab_data input[type="radio"]:checked + label + .tab {
+    display: block;
+}
+
+.item_tab_data input[type="radio"]:checked + label {
+    background-color: var(--tab_button_checked_color);
+}
+
+.item_tab_data label:hover {
+    cursor: pointer;
+    background-color: var(--tab_button_hovered_color);
+}
+
+.item_tab_data input[type="radio"]:checked + label:hover {
+    cursor: pointer;
+    background-color: var(--tab_button_hovered_color);
+}
+
+/* Return normal radio forms for radios inside tabs. */
+.item_tab_data .tab label {
+    background-color: var(--tab_content_background_color);
+}
+
+.item_tab_data .tab input[type="radio"] {
+    display: inline;
+}
+
+.item_tab_data .tab input[type="radio"]:checked + label + .tab {
+    display: block;
+}
+
+.item_tab_data .tab input[type="radio"]:checked + label {
+    background-color: var(--tab_content_background_color);
+}
+
+.item_tab_data .tab label:hover {
+    background-color: var(--tab_content_background_color);
+}
+
+.item_tab_data .tab input[type="radio"]:checked + label:hover {
+    cursor: pointer;
+    background-color: var(--tab_content_background_color);
+}
+
+@media (max-width: 768px) {
+    .main_grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 2fr 1fr 1fr;
+    }
+
+    .main_grid_item {
+        grid-column: 1;
+    }
+
+    .item_file_selection {
+        grid-row: 1;
+    }
+
+    .item_program_code {
+        grid-row: 2;
+    }
+
+    .item_focus {
+        grid-row: 3;
+    }
+
+    .item_tab_data {
+        grid-row: 4;
+    }
+}

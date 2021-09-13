@@ -1,0 +1,23 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'frama/style.css' %}">
+    <title>Delete</title>
+</head>
+<body>
+    
+<div class="outer_grid">
+    {%include 'frama/header.html'%}
+    <div class="side_page">
+        <h1>Choose file or directory to delete:</h1>
+        <ul>
+            {% for dir in directories %}
+                {% include 'frama/directory_tree_delete.html' %}
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+</body>
+</html>

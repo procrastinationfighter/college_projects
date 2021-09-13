@@ -1,0 +1,19 @@
+{%if dir.is_available%}
+    <li>
+        <i><a href="/frama/dir/{{ dir.id }}/delete/">{{dir.name}}</a></i>
+        {%if dir.child_dirs or dir.files%}
+           <ul>
+                {%for file in dir.files.all%}
+                    {%if file.is_available%}
+                        <li><b><a href="/frama/{{ file.id }}/delete">{{file.name}}</a></b></li>
+                    {%endif%}
+                {%endfor%}
+            </ul>
+            <ul>
+                {%for dir in dir.child_dirs.all%}
+                    {%include 'frama/directory_tree_delete.html'%}
+                {%endfor%}
+            </ul>
+       {%endif%}
+    </li>
+{%endif%}

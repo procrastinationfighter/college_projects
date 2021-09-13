@@ -1,0 +1,68 @@
+{% load static %}
+{% csrf_token %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'frama/style.css' %}">
+    <title>Main page</title>
+</head>
+<body>
+<div class="outer_grid">
+    {%include 'frama/header.html'%}
+
+    <div class="main_grid">
+        <div class="main_grid_item item_file_selection">
+        
+            Po prostu wybierz swój plik:
+            <ul>
+                {% for dir in directories %}
+                    {% include 'frama/directory_tree.html' %}
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="main_grid_item item_program_code">
+            {%if file%}
+            <pre>{{file}}</pre>
+            {%endif%}
+        </div>
+
+        <div class="main_grid_item item_focus">
+            <pre>{{focus}}</pre>
+        </div>
+
+        <div class="main_grid_item item_tab_data">
+            <input type="radio" id="tab1" name="tabs" checked="checked">
+            <label for="tab1">PROVERS</label>
+            <div class="tab">
+                    <input type="radio" id="alt-ergo" name="prover" value="alt-ergo">
+                    <label for="alt-ergo">Alt-Ergo</label><br>
+
+                    <input type="radio" id="z3" name="prover" value="z3">
+                    <label for="z3">Z3</label><br>
+
+                    <input type="radio" id="cvc4" name="prover" value="cvc4">
+                    <label for="cvc4">CVC4</label> 
+                    <br>
+                    <input type="submit" value="Submit">
+
+            </div>
+
+            <input type="radio" id="tab2" name="tabs">
+            <label for="tab2">VCs</label>
+            <div class="tab">
+                Here I would put the VCs tab content... If I had one!
+            </div>
+
+            <input type="radio" id="tab3" name="tabs">
+            <label for="tab3">RESULT</label>
+            <div class="tab">
+                <pre>{{log}}</pre>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>
