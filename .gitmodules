@@ -7,3 +7,6 @@
 [submodule "jnp2/tictactoe-telegram-bot"]
 	path = jnp2/tictactoe-telegram-bot
 	url = https://github.com/procrastinationfighter/tictactoe-telegram-bot.git
+[submodule "software_engineering/Planner"]
+	path = software_engineering/Planner
+	url = git@github.com:wprzytula/Planner.git
