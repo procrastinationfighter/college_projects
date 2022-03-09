@@ -11,3 +11,4 @@ List of subjects, ordered chronologically:
 7. Web applications - HTML, CSS, Python (Django)
 8. Software engineering - Rust
 9. Assembly programming - C, x86_64 assembly, ARM 32 assembly
+10. Languages and tools for programming III (jnp3-haskell) - Haskell
